@@ -1,3 +1,6 @@
+# env
+*.idea
+*.iml
 # Compiled class file
 *.class
 
