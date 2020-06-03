@@ -1,4 +1,4 @@
-# 这篇帖子介绍
+# 项目介绍
 起初这个项目是想封装一些Flink开发中常用的UDF/UDTF/UDAF函数，但是在学习的过程中发现系统介绍Flink的相关资料不是很多。查阅各种文档和书籍后，决定把学习的过程记录下来。
 
 所以这个项目中主要包含了Flink相关的以下内容：
@@ -22,7 +22,76 @@ Flink源码主要是由Java语言实现的，同时支持流处理和批处理�
 
 ## Flink安装
 Flink的安装部署分为两种模式：单机模式和集群模式。集群模式又细分为Standalone、Flink on Yarn模式，其中Flink on Yarn模式需要依赖Hadoop集群。在学习了解Flink的时候，我选择的是单机模式。
-安装环境：
+### 安装环境：
+
+1. 系统环境：macOs - 10.14.5
+2. Jdk版本：java version "1.8.0_161"
+3. 安装命令：brew install apache-flink
+4. Flink版本：Version: 1.10.0
+
+### 查看Flink安装路径：brew info apache-flink
+```java
+BrucedeMacBook-Pro:flink-easy-function brucexie$ brew info apache-flink
+apache-flink: stable 1.10.0, HEAD
+Scalable batch and stream data processing
+https://flink.apache.org/
+/usr/local/Cellar/apache-flink/1.10.0 (159 files, 311.4MB) *
+  Built from source on 2020-05-28 at 10:43:02
+From: https://mirrors.ustc.edu.cn/homebrew-core.git/Formula/apache-flink.rb
+==> Requirements
+Required: java = 1.8 ✔
+==> Options
+--HEAD
+	Install HEAD version
+==> Analytics
+install: 1,058 (30 days), 2,935 (90 days), 17,906 (365 days)
+install-on-request: 1,052 (30 days), 2,922 (90 days), 17,821 (365 days)
+build-error: 0 (30 days)
+```
+
+### 修改配置否则无法正常停止
+通过brew info apache-flink命令可以看到我的Flink默认安装路径：/usr/local/Cellar/apache-flink/1.10.0 
+	1. 在改目录下创建pid文件夹: /usr/local/Cellar/apache-flink/1.10.0/pid
+	2. cd /usr/local/Cellar/apache-flink/1.10.0/libexec/libexec
+	3. vim config.sh, 修改默认PID存储路径DEFAULT_ENV_PID_DIR为：/usr/local/Cellar/apache-flink/1.10.0/pid/
+
+```java
+104 # WARNING !!! , these values are only used if there is nothing else is specified in
+105 # conf/flink-conf.yaml
+106 
+107 DEFAULT_ENV_PID_DIR="/usr/local/Cellar/apache-flink/1.10.0/pid/"                          # Directory to store *.pid files to
+108 DEFAULT_ENV_LOG_MAX=5                               # Maximum number of old log files to keep
+109 DEFAULT_ENV_JAVA_OPTS=""                            # Optional JVM args
+110 DEFAULT_ENV_JAVA_OPTS_JM=""                         # Optional JVM args (JobManager)
+111 DEFAULT_ENV_JAVA_OPTS_TM=""                         # Optional JVM args (TaskManager)
+112 DEFAULT_ENV_JAVA_OPTS_HS=""                         # Optional JVM args (HistoryServer)
+113 DEFAULT_ENV_SSH_OPTS=""                             # Optional SSH parameters running in cluster mode
+114 DEFAULT_YARN_CONF_DIR=""                            # YARN Configuration Directory, if necessary
+115 DEFAULT_HADOOP_CONF_DIR=""                          # Hadoop Configuration Directory, if necessary
+
+```
+
+### 启动Flink
+进入Flink启动目录：/usr/local/Cellar/apache-flink/1.10.0/libexec/libexec
+```java
+BrucedeMacBook-Pro:libexec brucexie$ ./start-cluster.sh 
+Starting cluster.
+Starting standalonesession daemon on host BrucedeMacBook-Pro.local.
+Starting taskexecutor daemon on host BrucedeMacBook-Pro.local.
+BrucedeMacBook-Pro:libexec brucexie$ 
+```
+
+访问Flink服务管理页面：http://localhost:8081/
+
+![Flink管理页面](./images/flink-admin-page.jpeg)
+
+### 停止Flink
+```java
+BrucedeMacBook-Pro:libexec brucexie$ ./stop-cluster.sh 
+Stopping taskexecutor daemon (pid: 25468) on host BrucedeMacBook-Pro.local.
+Stopping standalonesession daemon (pid: 25197) on host BrucedeMacBook-Pro.local.
+BrucedeMacBook-Pro:libexec brucexie$ 
+```
 
 ## Flink快速入门
 Flink-Hello World,
