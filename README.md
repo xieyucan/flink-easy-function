@@ -104,11 +104,12 @@ Transformation: 算子，用来处理业务逻辑；
 DataSink: 输出组件，用来将处理后的数据输出到指定组件，可以是数据库也可以是文件。
 
 Flink对于数据接收组件、算子和输出组件都提供了常见的API并保留了可自定义扩展的API。结合以上内容，我们的Task研发流程可以分为以下几个步骤：
-	1. 获取执行环境Environment对象
-	2. 获取资源输入DataSource/DataSet对象
-	3. 执行Transaformation业务处理逻辑
-	4. 绑定输出DataSink对象
-	5. 启动任务
+
+ 1. 获取执行环境Environment对象
+ 2. 获取资源输入DataSource/DataSet对象
+ 3. 执行Transaformation业务处理逻辑
+ 4. 绑定输出DataSink对象
+ 5. 启动任务
 
 ![Flink开发流程](./images/flink-dev-pro.jpeg)
 
