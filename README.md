@@ -1,4 +1,4 @@
-# 项目介绍
+# 这篇帖子介绍
 起初这个项目是想封装一些Flink开发中常用的UDF/UDTF/UDAF函数，但是在学习的过程中发现系统介绍Flink的相关资料不是很多。查阅各种文档和书籍后，决定把学习的过程记录下来。
 
 所以这个项目中主要包含了Flink相关的以下内容：
@@ -9,7 +9,7 @@
 	4. Flink常用API以及代码实例
 	5. Flink相关知识点介绍
 	6. Flink实时数据分析平台 
-	   前端：NodeJs+Vue+Webpack+Iview, 后端：SpringBoot+Jpa+MySql+Kafka+Flink>
+	   前端：NodeJs+Vue+Webpack+Iview, 后端：SpringBoot+Jpa+MySql+Kafka+Flink
 
 ## Flink简介
 
@@ -94,7 +94,132 @@ BrucedeMacBook-Pro:libexec brucexie$
 ```
 
 ## Flink快速入门
-Flink-Hello World,
+Flink为我们提供了3个组件：DataSource、Transformation、DataSink。
+
+DataSource： 数据源组件，主要用来接收数据资源；
+Transformation: 算子，用来处理业务逻辑；
+DataSink: 输出组件，用来将处理后的数据输出到指定组件，可以是数据库也可以是文件。
+
+Flink对于数据接收组件、算子和输出组件都提供了常见的API并保留了可自定义扩展的API。结合以上内容，我们的Task研发流程可以分为以下几个步骤：
+	1. 获取执行环境Environment对象
+	2. 获取资源输入DataSource/DataSet对象
+	3. 执行Transaformation业务处理逻辑
+	4. 绑定输出DataSink对象
+	5. 启动任务
+
+![Flink开发流程](./images/flink-dev-pro.jpeg)
+
+### 添加maven依赖
+```java
+<properties>
+	<java.version>1.8</java.version>
+	<flink.version>1.10.0</flink.version>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+</properties>
+
+<dependencies>
+
+	<dependency>
+		<groupId>org.apache.flink</groupId>
+		<artifactId>flink-java</artifactId>
+		<version>${flink.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.apache.flink</groupId>
+		<artifactId>flink-streaming-java_2.11</artifactId>
+		<version>${flink.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.apache.flink</groupId>
+		<artifactId>flink-table-api-java-bridge_2.12</artifactId>
+		<version>${flink.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.9</version>
+		<scope>test</scope>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-nop</artifactId>
+		<version>1.7.2</version>
+	</dependency>
+		
+</dependencies>
+
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>3.5</version>
+			<configuration>
+				<source>${java.version}</source>
+				<target>${java.version}</target>
+				<encoding>${project.build.sourceEncoding}</encoding>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+
+```
+
+照常说是不需要flink-table-api-java-bridge_2.12这个依赖的，因为这个项目添加了自定的UDF所以需要依赖这个插件。如果单纯是跑HelloWorld，flink-table-api-java-bridge_2.12和junit这两个组件是都不需要。
+
+### FlinkHelloWorld.java
+```java
+package com.xh.flink.easy.study;
+
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.util.Collector;
+
+/**
+ * Created by xiehui1956(@)gmail.com on 2020/6/2
+ */
+public class FlinkHelloWorld {
+
+    public static void main(String[] args) throws Exception {
+
+        StreamExecutionEnvironment environment = StreamExecutionEnvironment.getExecutionEnvironment();
+        environment.socketTextStream("localhost", 9999)
+                .flatMap(new FlatMapFunction<String, String>() {
+                    @Override
+                    public void flatMap(String value, Collector<String> out) throws Exception {
+                        out.collect(value + " Hello World!");
+                    }
+                }).print();
+
+        environment.execute("Hello World");
+
+    }
+}
+
+```
+
+### 执行程序
+
+首先监听端口：9999
+```java
+BrucedeMacBook-Pro:clickhouse-jdbc brucexie$ nc -lk 9999
+ 
+```
+
+启动程序，然后在监听端口处输入内容观察控制台输出。如下图：
+
+终端：
+
+![Flink终端](./images/flink-hw-t.jpeg)
+
+控制台：
+
+![Flink控制台](./images/flink-hw-s.jpeg)
+
 
 ## Flink架构
 Flink架构分为4层，Deploy层、Core层、Api层、Library层。
