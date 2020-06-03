@@ -94,6 +94,9 @@ BrucedeMacBook-Pro:libexec brucexie$
 ```
 
 ## Flink快速入门
+
+源码地址：https://github.com/xieyucan/flink-easy-function/blob/master/src/main/java/com/xh/flink/easy/study/FlinkHelloWorld.java
+
 Flink为我们提供了3个组件：DataSource、Transformation、DataSink。
 
 DataSource： 数据源组件，主要用来接收数据资源；
